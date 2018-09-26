@@ -1,4 +1,7 @@
 #!/bin/bash
+# Install packages
+RUN apt-get update
+RUN apt-get install -y iputils-ping
 
 # Backwards compatibility for old variable names (deprecated)
 if [ "x$PGUSER"     != "x" ]; then
@@ -78,7 +81,7 @@ if [ "$1" = 'postgres' ]; then
 		{ echo; echo "host replication all 0.0.0.0/0 $authMethod"; } | gosu postgres tee -a "$PGDATA/pg_hba.conf" > /dev/null
 		{ echo; echo "host all all 0.0.0.0/0 $authMethod"; } | gosu postgres tee -a "$PGDATA/pg_hba.conf" > /dev/null
 
-		# internal start of server in order to allow set-up using psql-client		
+		# internal start of server in order to allow set-up using psql-client
 		# does not listen on external TCP/IP and waits until start finishes
 		gosu postgres pg_ctl -D "$PGDATA" \
 			-o "-c listen_addresses='localhost'" \
@@ -106,7 +109,7 @@ if [ "$1" = 'postgres' ]; then
 			$op USER "$POSTGRES_USER" WITH SUPERUSER $pass ;
 		EOSQL
 		echo
-		
+
 		fi
 
 		psql+=( --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" )
